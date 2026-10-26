@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barbearia | Agendamento</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">Barbearia</div>
+  <h1>Vamo Falar Sobre "Barbearia"</h1>
+  <p>Agende seu horário e deixe a comanda pronta antes de chegar.</p>
+</header>
+
+<main id="app">
+  <div class="col">
+    <section class="card">
+      <h2><span class="n">1</span>Barbeiro</h2>
+      <div id="barbeiros" class="opts"></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">2</span>Data e horário</h2>
+      <div id="dias" class="opts"></div>
+      <div id="horarios" class="slots"></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">3</span>Comanda</h2>
+      <div id="servicos"></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">4</span>Seus dados</h2>
+      <label>Nome<input id="nome" autocomplete="name"></label>
+      <label>Telefone<input id="telefone" type="tel" autocomplete="tel" placeholder="(81) 90000-0000"></label>
+    </section>
+  </div>
+
+  <aside class="card" id="resumo-box">
+    <h2>Resumo</h2>
+    <dl id="resumo"></dl>
+    <div id="msg" role="alert"></div>
+    <button class="primary" id="confirmar">Confirmar agendamento</button>
+  </aside>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
