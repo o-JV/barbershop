@@ -1,10 +1,11 @@
-import random
+import secrets
 
 from loja.dominio import (
     BARBEIROS,
     Comanda,
     DadosInvalidos,
     HorarioIndisponivel,
+    validar_horario,
 )
 from loja.repositorio import RepositorioAgenda
 
@@ -18,7 +19,7 @@ class CodigoJaExiste(Exception):
 
 
 def gerar_codigo() -> str:
-    return "".join(random.choices("0123456789ABCDEF", k=6))
+    return "".join(secrets.choice("0123456789ABCDEF") for _ in range(6))
 
 
 class ServicoAgenda:
@@ -28,11 +29,10 @@ class ServicoAgenda:
         self.repositorio = repositorio
 
     def _barbeiro_para(self, data: str, hora: str, preferencia: str) -> dict:
-        ids = (
-            [b["id"] for b in BARBEIROS]
-            if preferencia == "qualquer"
-            else [preferencia]
-        )
+        todos = [b["id"] for b in BARBEIROS]
+        if preferencia != "qualquer" and preferencia not in todos:
+            raise DadosInvalidos("barbeiro inválido")
+        ids = todos if preferencia == "qualquer" else [preferencia]
         for barbeiro_id in ids:
             if not self.repositorio.ocupado(data, hora, barbeiro_id):
                 return next(b for b in BARBEIROS if b["id"] == barbeiro_id)
@@ -48,10 +48,14 @@ class ServicoAgenda:
 
         if len(nome) < 2:
             raise DadosInvalidos("informe seu nome")
-        if len(telefone) < 10:
-            raise DadosInvalidos("informe um telefone com DDD")
+        if len(nome) > 60:
+            raise DadosInvalidos("o nome pode ter no máximo 60 letras")
+        if len(telefone) not in (10, 11):
+            raise DadosInvalidos("informe um telefone com DDD (10 ou 11 dígitos)")
         if not data or not hora:
             raise DadosInvalidos("escolha a data e o horário")
+
+        validar_horario(data, hora)
 
         comanda = Comanda(itens)  # valida os itens
         barbeiro = self._barbeiro_para(data, hora, preferencia)

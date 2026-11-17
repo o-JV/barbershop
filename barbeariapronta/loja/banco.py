@@ -37,3 +37,15 @@ def engine_em_memoria():
 
 def criar_tabelas(engine):
     SQLModel.metadata.create_all(engine)
+
+    # impede no próprio banco dois agendamentos no mesmo dia, hora e barbeiro.
+    # Se o arquivo antigo já tiver duplicados, o índice não é criado e o
+    # sistema continua funcionando só com a checagem do serviço.
+    try:
+        with engine.begin() as conexao:
+            conexao.exec_driver_sql(
+                "CREATE UNIQUE INDEX IF NOT EXISTS ux_agendamento_horario "
+                "ON agendamento (data, hora, barbeiro_id)"
+            )
+    except Exception:
+        pass

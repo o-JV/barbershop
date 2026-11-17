@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date, datetime
 
 
 CATALOGO = {
@@ -15,6 +16,11 @@ BARBEIROS = [
 
 LIMITE_DESCONTO = 30.0
 
+# expediente: 09:00 às 18:00, horários de 30 em 30 minutos, de segunda a sábado
+ABERTURA = 9 * 60
+FECHAMENTO = 18 * 60
+INTERVALO = 30
+
 
 class DadosInvalidos(Exception):
     pass
@@ -22,6 +28,35 @@ class DadosInvalidos(Exception):
 
 class HorarioIndisponivel(Exception):
     pass
+
+
+def validar_horario(data, hora, agora: datetime | None = None) -> None:
+    """Garante que data e hora existem, estão no expediente e não são passado."""
+    try:
+        dia = date.fromisoformat(data)
+        if dia.isoformat() != data:
+            raise ValueError
+    except (TypeError, ValueError):
+        raise DadosInvalidos("data inválida, use o formato AAAA-MM-DD")
+
+    try:
+        horario = datetime.strptime(hora, "%H:%M").time()
+        if horario.strftime("%H:%M") != hora:
+            raise ValueError
+    except (TypeError, ValueError):
+        raise DadosInvalidos("horário inválido, use o formato HH:MM")
+
+    if dia.weekday() == 6:
+        raise DadosInvalidos("não atendemos aos domingos")
+
+    minutos = horario.hour * 60 + horario.minute
+    if not (ABERTURA <= minutos < FECHAMENTO) or minutos % INTERVALO:
+        raise DadosInvalidos(
+            "escolha um horário entre 09:00 e 17:30, de 30 em 30 minutos"
+        )
+
+    if datetime.combine(dia, horario) <= (agora or datetime.now()):
+        raise DadosInvalidos("esse horário já passou, escolha outro")
 
 
 @dataclass

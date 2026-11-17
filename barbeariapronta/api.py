@@ -104,4 +104,9 @@ def agenda_do_dia(
     data: str,
     servico: ServicoAgenda = Depends(obter_servico),
 ):
-    return servico.listar_do_dia(data)
+    # rota pública: devolve só o que o front precisa para marcar horários
+    # ocupados, sem nome nem telefone de outros clientes
+    return [
+        {"hora": a["hora"], "barbeiro_id": a["barbeiro_id"]}
+        for a in servico.listar_do_dia(data)
+    ]

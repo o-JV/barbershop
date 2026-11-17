@@ -1,6 +1,8 @@
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from loja.banco import AgendamentoRegistro
+from loja.dominio import HorarioIndisponivel
 
 
 def para_registro(dados: dict) -> AgendamentoRegistro:
@@ -44,8 +46,13 @@ class RepositorioAgenda:
 
     def adicionar(self, dados: dict) -> int:
         registro = para_registro(dados)
-        self.sessao.add(registro)
-        self.sessao.commit()
+        try:
+            self.sessao.add(registro)
+            self.sessao.commit()
+        except IntegrityError:
+            # duas pessoas pegaram o mesmo horário ao mesmo tempo
+            self.sessao.rollback()
+            raise HorarioIndisponivel("esse horário foi ocupado, escolha outro")
         self.sessao.refresh(registro)
         return registro.id
 
