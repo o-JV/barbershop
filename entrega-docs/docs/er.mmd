@@ -1,0 +1,18 @@
+---
+title: Modelo ER (loja/banco.py, SQLite barbearia.db)
+---
+erDiagram
+    agendamento {
+        INTEGER id PK
+        VARCHAR codigo UK "NOT NULL"
+        VARCHAR nome "NOT NULL"
+        VARCHAR telefone "NOT NULL"
+        VARCHAR data "NOT NULL, ISO AAAA-MM-DD"
+        VARCHAR hora "NOT NULL, HH:MM"
+        VARCHAR barbeiro_id "NOT NULL, sem FK"
+        VARCHAR barbeiro_nome "NOT NULL"
+        VARCHAR itens "NOT NULL, CSV: corte,barba"
+        FLOAT subtotal "NOT NULL"
+        FLOAT desconto "NOT NULL"
+        FLOAT total "NOT NULL"
+    }

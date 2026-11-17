@@ -1,0 +1,38 @@
+---
+title: Domínio da Barbearia
+---
+classDiagram
+    direction LR
+    class Agendamento {
+        <<AgendamentoRegistro em loja/banco.py>>
+        codigo: str
+        nome: str
+        telefone: str
+        data: str
+        hora: str
+        subtotal: float
+        desconto: float
+        total: float
+    }
+    class Comanda {
+        <<dataclass em loja/dominio.py>>
+        itens: list[str]
+        subtotal() float
+        desconto() float
+        total() float
+    }
+    class Servico {
+        <<item de CATALOGO>>
+        chave: str
+        nome: str
+        valor: float
+    }
+    class Barbeiro {
+        <<item de BARBEIROS>>
+        id: str
+        nome: str
+        info: str
+    }
+    Agendamento "1" *-- "1" Comanda : tem
+    Comanda "1" --> "1..*" Servico : itens
+    Agendamento "0..*" --> "1" Barbeiro : atendido por

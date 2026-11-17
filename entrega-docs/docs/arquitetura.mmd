@@ -1,0 +1,25 @@
+---
+title: Arquitetura em camadas
+---
+flowchart TD
+    A["<b>Navegador - front-end</b><br/>frontend/index.html, style.css, app.js<br/><i>monta a tela e chama a API com fetch</i>"]
+    B["<b>Rotas - FastAPI</b><br/>api.py<br/><i>valida (AgendamentoEntrada), traduz exceção em 404/409/422</i>"]
+    C["<b>Serviço - regras de negócio</b><br/>loja/servico.py (ServicoAgenda)<br/><i>valida dados, escolhe barbeiro, gera código</i>"]
+    D["<b>Domínio</b><br/>loja/dominio.py<br/><i>Comanda, CATALOGO, BARBEIROS, exceções</i>"]
+    R["<b>Repositório</b><br/>loja/repositorio.py (RepositorioAgenda)<br/><i>único que executa consultas</i>"]
+    M["<b>Modelo - SQLModel</b><br/>loja/banco.py (AgendamentoRegistro, engine)<br/><i>traduz objeto Python em linha de tabela</i>"]
+    DB[("<b>Banco - SQLite</b><br/>barbearia.db<br/><i>guarda o dado em disco</i>")]
+
+    A -->|"requisição HTTP (JSON)"| B
+    B -->|"chama o serviço"| C
+    C -->|"pede o dado"| R
+    R -->|"objeto Python"| M
+    M -->|"SQL"| DB
+    C -->|"usa Comanda"| D
+    B -.->|"GET /servicos e /barbeiros leem direto, sem serviço"| D
+    B -.->|"abre Session (obter_sessao)"| M
+    DB ==>|"resposta JSON sobe pelas mesmas camadas"| A
+
+    classDef cam fill:#f4f6fb,stroke:#004b8d,color:#10243e
+    class A,B,C,D,R,M,DB cam
+    linkStyle 8 stroke:#f7941d,stroke-width:3px
